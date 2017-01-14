@@ -1,96 +1,116 @@
 
 package org.usfirst.frc.team2554.robot;
 
-
-import edu.wpi.first.wpilibj.SampleRobot;
-import edu.wpi.first.wpilibj.RobotDrive;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import org.usfirst.frc.team2554.robot.commands.ExampleCommand;
+import org.usfirst.frc.team2554.robot.subsystems.ExampleSubsystem;
+
 /**
- * This is a demo program showing the use of the RobotDrive class.
- * The SampleRobot class is the base of a robot application that will automatically call your
- * Autonomous and OperatorControl methods at the right time as controlled by the switches on
- * the driver station or the field controls.
- *
  * The VM is configured to automatically run this class, and to call the
- * functions corresponding to each mode, as described in the SampleRobot
+ * functions corresponding to each mode, as described in the IterativeRobot
  * documentation. If you change the name of this class or the package after
  * creating this project, you must also update the manifest file in the resource
  * directory.
- *
- * WARNING: While it may look like a good choice to use for your code if you're inexperienced,
- * don't. Unless you know what you are doing, complex code will be much more difficult under
- * this system. Use IterativeRobot or Command-Based instead if you're new.
  */
-public class Robot extends SampleRobot {
-    RobotDrive myRobot;
-    Joystick stick;
-    final String defaultAuto = "Default";
-    final String customAuto = "My Auto";
-    SendableChooser chooser;
+public class Robot extends IterativeRobot {
 
-    public Robot() {
-        myRobot = new RobotDrive(0, 1);
-        myRobot.setExpiration(0.1);
-        stick = new Joystick(0);
-    }
-    
-    public void robotInit() {
-        chooser = new SendableChooser();
-        chooser.addDefault("Default Auto", defaultAuto);
-        chooser.addObject("My Auto", customAuto);
-        SmartDashboard.putData("Auto modes", chooser);
-    }
+	public static final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
+	public static OI oi;
+
+	Command autonomousCommand;
+	SendableChooser<Command> chooser = new SendableChooser<>();
 
 	/**
-	 * This autonomous (along with the chooser code above) shows how to select between different autonomous modes
-	 * using the dashboard. The sendable chooser code works with the Java SmartDashboard. If you prefer the LabVIEW
-	 * Dashboard, remove all of the chooser code and uncomment the getString line to get the auto name from the text box
-	 * below the Gyro
-	 *
-	 * You can add additional auto modes by adding additional comparisons to the if-else structure below with additional strings.
-	 * If using the SendableChooser make sure to add them to the chooser code above as well.
+	 * This function is run when the robot is first started up and should be
+	 * used for any initialization code.
 	 */
-    public void autonomous() {
-    	
-    	String autoSelected = (String) chooser.getSelected();
-//		String autoSelected = SmartDashboard.getString("Auto Selector", defaultAuto);
-		System.out.println("Auto selected: " + autoSelected);
-    	
-    	switch(autoSelected) {
-    	case customAuto:
-            myRobot.setSafetyEnabled(false);
-            myRobot.drive(-0.5, 1.0);	// spin at half speed
-            Timer.delay(2.0);		//    for 2 seconds
-            myRobot.drive(0.0, 0.0);	// stop robot
-            break;
-    	case defaultAuto:
-    	default:
-            myRobot.setSafetyEnabled(false);
-            myRobot.drive(-0.5, 0.0);	// drive forwards half speed
-            Timer.delay(2.0);		//    for 2 seconds
-            myRobot.drive(0.0, 0.0);	// stop robot
-            break;
-    	}
-    }
+	@Override
+	public void robotInit() {
+		oi = new OI();
+		chooser.addDefault("Default Auto", new ExampleCommand());
+		// chooser.addObject("My Auto", new MyAutoCommand());
+		SmartDashboard.putData("Auto mode", chooser);
+	}
 
-    /**
-     * Runs the motors with arcade steering.
-     */
-    public void operatorControl() {
-        myRobot.setSafetyEnabled(true);
-        while (isOperatorControl() && isEnabled()) {
-            myRobot.arcadeDrive(stick); // drive with arcade style (use right stick)
-            Timer.delay(0.005);		// wait for a motor update time
-        }
-    }
+	/**
+	 * This function is called once each time the robot enters Disabled mode.
+	 * You can use it to reset any subsystem information you want to clear when
+	 * the robot is disabled.
+	 */
+	@Override
+	public void disabledInit() {
 
-    /**
-     * Runs during test mode
-     */
-    public void test() {
-    }
+	}
+
+	@Override
+	public void disabledPeriodic() {
+		Scheduler.getInstance().run();
+	}
+
+	/**
+	 * This autonomous (along with the chooser code above) shows how to select
+	 * between different autonomous modes using the dashboard. The sendable
+	 * chooser code works with the Java SmartDashboard. If you prefer the
+	 * LabVIEW Dashboard, remove all of the chooser code and uncomment the
+	 * getString code to get the auto name from the text box below the Gyro
+	 *
+	 * You can add additional auto modes by adding additional commands to the
+	 * chooser code above (like the commented example) or additional comparisons
+	 * to the switch structure below with additional strings & commands.
+	 */
+	@Override
+	public void autonomousInit() {
+		autonomousCommand = chooser.getSelected();
+
+		/*
+		 * String autoSelected = SmartDashboard.getString("Auto Selector",
+		 * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
+		 * = new MyAutoCommand(); break; case "Default Auto": default:
+		 * autonomousCommand = new ExampleCommand(); break; }
+		 */
+
+		// schedule the autonomous command (example)
+		if (autonomousCommand != null)
+			autonomousCommand.start();
+	}
+
+	/**
+	 * This function is called periodically during autonomous
+	 */
+	@Override
+	public void autonomousPeriodic() {
+		Scheduler.getInstance().run();
+	}
+
+	@Override
+	public void teleopInit() {
+		// This makes sure that the autonomous stops running when
+		// teleop starts running. If you want the autonomous to
+		// continue until interrupted by another command, remove
+		// this line or comment it out.
+		if (autonomousCommand != null)
+			autonomousCommand.cancel();
+	}
+
+	/**
+	 * This function is called periodically during operator control
+	 */
+	@Override
+	public void teleopPeriodic() {
+		Scheduler.getInstance().run();
+	}
+
+	/**
+	 * This function is called periodically during test mode
+	 */
+	@Override
+	public void testPeriodic() {
+		LiveWindow.run();
+	}
 }
