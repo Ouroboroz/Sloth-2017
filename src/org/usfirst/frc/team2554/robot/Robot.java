@@ -46,7 +46,7 @@ public class Robot extends SampleRobot {
 	 * If using the SendableChooser make sure to add them to the chooser code above as well.
 	 */
     public void autonomous() {
-    	}
+
     }
 
     /**
@@ -55,7 +55,7 @@ public class Robot extends SampleRobot {
     public void operatorControl() {
         myRobot.setSafetyEnabled(true);
         while (isOperatorControl() && isEnabled()) {
-            controller.
+
         }
     }
 
