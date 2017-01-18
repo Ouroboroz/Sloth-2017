@@ -3,7 +3,6 @@ import java.lang.Math;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Joystick;
-
 public class Robot extends SampleRobot {
 	RobotDrive myRobot; //change this later
     Joystick controller;
@@ -15,6 +14,7 @@ public class Robot extends SampleRobot {
 		myRobot = new RobotDrive(IO.driveTrain[0], IO.driveTrain[1], IO.driveTrain[2], IO.driveTrain[3]);
 		averageXaxisMag = 0;
 		averageYaxisMag = 0;
+		controller = new Joystick(IO.controllerPort);
 	}
 
 	public void robotInit() {
@@ -28,19 +28,39 @@ public class Robot extends SampleRobot {
 	public void operatorControl() {
 		myRobot.setSafetyEnabled(true);
 		while (isOperatorControl() && isEnabled()) {
-			if(controller.getRawAxis(IO.stickLeftX)/controller.getRawAxis(IO.stickLeftX) == -controller.getRawAxis(IO.stickLeftY)/controller.getRawAxis(IO.stickLeftY)){
-				myRobot.mecanumDrive_Cartesian(0, 0, ( controller.getRawAxis(IO.stickLeftY) - controller.getRawAxis(IO.stickLeftY) ) / 2.0, 0);
+			if(checkSign(controller.getRawAxis(IO.stickLeftY)) == -checkSign(controller.getRawAxis(IO.stickRightY))){
+				if(controller.getRawAxis(IO.stickLeftY) > DEADZONE && controller.getRawAxis(IO.stickRightY) > DEADZONE){
+					averageYaxisMag = (controller.getRawAxis(IO.stickLeftY)-controller.getRawAxis(IO.stickRightY)/2.0);
+				}
+				else
+					averageYaxisMag = 0;
+				myRobot.mecanumDrive_Cartesian(0, 0, averageYaxisMag/5, 0);
 			}
-			else{
-				if(Math.abs(controller.getRawAxis(IO.stickLeftX)) > DEADZONE && Math.abs(controller.getRawAxis(IO.stickRightX)) > DEADZONE)
-					averageXaxisMag = ( controller.getRawAxis(IO.stickLeftX) + controller.getRawAxis(IO.stickRightX) ) / 2.0;
-				if(Math.abs(controller.getRawAxis(IO.stickLeftY)) > DEADZONE && Math.abs(controller.getRawAxis(IO.stickRightY)) > DEADZONE)
-				averageYaxisMag = ( controller.getRawAxis(IO.stickLeftY) + controller.getRawAxis(IO.stickLeftY) ) / 2.0;
-				myRobot.mecanumDrive_Cartesian(averageXaxisMag, averageYaxisMag, 0, 0);
+			if(checkSign(controller.getRawAxis(IO.stickLeftX)) == checkSign(controller.getRawAxis(IO.stickRightX))){
+				if(controller.getRawAxis(IO.stickLeftY) > DEADZONE && controller.getRawAxis(IO.stickRightX) > DEADZONE)
+					averageXaxisMag = (controller.getRawAxis(IO.stickLeftX)+controller.getRawAxis(IO.stickRightX)/2.0);
+				else
+					averageXaxisMag = 0;
+				if(controller.getRawAxis(IO.stickLeftY) > DEADZONE && controller.getRawAxis(IO.stickRightX) > DEADZONE)
+					averageYaxisMag = (controller.getRawAxis(IO.stickLeftY)+controller.getRawAxis(IO.stickRightY)/2.0);
+				else
+					averageYaxisMag = 0;
+				myRobot.mecanumDrive_Cartesian(averageXaxisMag/5, averageYaxisMag/5, 0, 0);
+			}
+			if(controller.getRawButton(1)){
+				myRobot.mecanumDrive_Cartesian(0, 0, 0, 0);
+				myRobot.drive(0, 0);
 			}
 		}
 	}
 
 	public void test() {
+	}
+	public int checkSign(double checkNum){
+		if(checkNum < 0)
+			return -1;
+		if(checkNum > 0)
+			return 1;
+		return 0;
 	}
 }
