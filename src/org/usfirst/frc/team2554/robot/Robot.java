@@ -1,17 +1,19 @@
 package org.usfirst.frc.team2554.robot;
+
+//Daniel's Code
 import java.lang.Math;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+
 public class Robot extends SampleRobot {
-	RobotDrive myRobot; //change this later
-    Joystick controller;
-    double averageXaxisMag, averageYaxisMag;
-    final double DEADZONE = 0.15;
+	RobotDrive myRobot; // change this later
+	Joystick controller;
+	double averageXaxisMag, averageYaxisMag, averageZaxisMag;
+	final double DEADZONE = 0.15;
 
 	public Robot() {
-		myRobot.setExpiration(0.1);
 		myRobot = new RobotDrive(IO.driveTrain[0], IO.driveTrain[1], IO.driveTrain[2], IO.driveTrain[3]);
 		averageXaxisMag = 0;
 		averageYaxisMag = 0;
@@ -28,46 +30,45 @@ public class Robot extends SampleRobot {
 
 	public void operatorControl() {
 		myRobot.setSafetyEnabled(true);
+		int thanksArjun = 0;
 		while (isOperatorControl() && isEnabled()) {
-			//if both sticks are going in different directions
-			if(checkSign(controller.getRawAxis(IO.stickLeftY)) == -checkSign(controller.getRawAxis(IO.stickRightY))){
-				if(controller.getRawAxis(IO.stickLeftY) > DEADZONE && controller.getRawAxis(IO.stickRightY) > DEADZONE){
-					averageYaxisMag = (controller.getRawAxis(IO.stickLeftY)-controller.getRawAxis(IO.stickRightY))/2.0;
-				}
-				else
-					averageYaxisMag = 0;
-				myRobot.mecanumDrive_Cartesian(0, 0, averageYaxisMag/5, 0);
+			if (checkSign(isAboveDeadZone(controller.getRawAxis(IO.stickLeftX))) == checkSign(
+					isAboveDeadZone(controller.getRawAxis(IO.stickRightX)))) {
+				averageXaxisMag = (isAboveDeadZone(controller.getRawAxis(IO.stickLeftX))
+						+ isAboveDeadZone((controller.getRawAxis(IO.stickRightX)))) / 2.0;
 			}
-			//if both are going in same directions
-			if(checkSign(controller.getRawAxis(IO.stickLeftX)) == checkSign(controller.getRawAxis(IO.stickRightX))){
-				if(controller.getRawAxis(IO.stickLeftY) > DEADZONE && controller.getRawAxis(IO.stickRightX) > DEADZONE)
-					averageXaxisMag = (controller.getRawAxis(IO.stickLeftX)+controller.getRawAxis(IO.stickRightX))/2.0;
-				else
-					averageXaxisMag = 0;
-				if(controller.getRawAxis(IO.stickLeftY) > DEADZONE && controller.getRawAxis(IO.stickRightX) > DEADZONE)
-					averageYaxisMag = (controller.getRawAxis(IO.stickLeftY)+controller.getRawAxis(IO.stickRightY))/2.0;
-				else
-					averageYaxisMag = 0;
-				myRobot.mecanumDrive_Cartesian(averageXaxisMag/5, averageYaxisMag/5, 0, 0);
-			}
-			//press the A button for emergency shutdown B)
-			if(controller.getRawButton(1)){
+			if (checkSign(isAboveDeadZone(controller.getRawAxis(IO.stickLeftY))) == checkSign(
+					isAboveDeadZone(controller.getRawAxis(IO.stickRightY)))) {
+				averageYaxisMag = (isAboveDeadZone(controller.getRawAxis(IO.stickLeftY))
+						+ isAboveDeadZone((controller.getRawAxis(IO.stickRightY)))) / 2.0;
+				averageZaxisMag = 0;
+			} else if (checkSign(isAboveDeadZone(controller.getRawAxis(IO.stickLeftY))) == -checkSign(
+					isAboveDeadZone(controller.getRawAxis(IO.stickRightY)))) {
+				averageZaxisMag = (isAboveDeadZone(controller.getRawAxis(IO.stickLeftY))
+						- isAboveDeadZone((controller.getRawAxis(IO.stickRightY)))) / 2.0;
+			} else {
 				myRobot.mecanumDrive_Cartesian(0, 0, 0, 0);
-				myRobot.drive(0, 0);
+				System.out.println("thanks for nothing arjun");
+				System.out.println(thanksArjun++);
+				// thanksArjun++;
 			}
-			//hehe some fun! :D
-			if(controller.getRawButton(2)){
-				controller.setRumble(RumbleType.kRightRumble, 0.5);
-			}
+			myRobot.mecanumDrive_Cartesian(averageXaxisMag, averageYaxisMag / 2.0, averageZaxisMag / 2.0, 0);
+			myRobot.setExpiration(.1);
 		}
+
 	}
 
 	public void test() {
 	}
-	public int checkSign(double checkNum){
-		if(checkNum < 0)
+
+	public double isAboveDeadZone(double checkNum) {
+		return (Math.abs(checkNum) > DEADZONE) ? checkNum : 0;
+	}
+
+	public int checkSign(double checkNum) {
+		if (checkNum < 0)
 			return -1;
-		if(checkNum > 0)
+		if (checkNum > 0)
 			return 1;
 		return 0;
 	}
