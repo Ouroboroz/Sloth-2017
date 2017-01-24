@@ -1,4 +1,4 @@
-package org.usfirst.frc.team2554.robot;
+package pixy;
 
 public class PixyPacket {
 	public int X;

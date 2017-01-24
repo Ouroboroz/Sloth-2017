@@ -1,4 +1,4 @@
-package org.usfirst.frc.team2554.robot;
+package pixy;
 
 public class PixyException extends Exception{
 	public PixyException(String message){
