@@ -52,7 +52,8 @@ public class Robot extends SampleRobot {
 				System.out.println(thanksArjun++);
 				// thanksArjun++;
 			}
-			myRobot.mecanumDrive_Cartesian(averageXaxisMag, averageYaxisMag / 2.0, averageZaxisMag / 2.0, 0);
+			// idk why, but we had to switch Z and Y for it to work properly
+			myRobot.mecanumDrive_Cartesian(averageXaxisMag, averageZaxisMag, -(averageYaxisMag), 0);
 			myRobot.setExpiration(.1);
 		}
 
