@@ -4,11 +4,10 @@ package org.usfirst.frc.team2554.robot;
 import java.lang.Math;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SampleRobot;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Victor;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+//import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 
 public class Robot extends SampleRobot {
 	RobotDrive myRobot; // change this later
@@ -16,7 +15,8 @@ public class Robot extends SampleRobot {
 	double averageXaxisMag, averageYaxisMag, averageZaxisMag;
 	final double DEADZONE = 0.15;
 	Victor intake;
-	ADXRS450_Gyro gyro;
+	//ADXRS450_Gyro gyro;
+	AnalogInput ai;
 
 	public Robot() {
 		myRobot = new RobotDrive(IO.driveTrain[0], IO.driveTrain[1], IO.driveTrain[2], IO.driveTrain[3]);
@@ -24,11 +24,12 @@ public class Robot extends SampleRobot {
 		averageYaxisMag = 0;
 		controller = new Joystick(IO.controllerPort);
 		intake = new Victor(IO.rollerPort);
-		gyro = new ADXRS450_Gyro();
+		//gyro = new ADXRS450_Gyro();
+		ai = new AnalogInput(0);
 	}
 
 	public void robotInit() {
-		gyro.calibrate();
+		//gyro.calibrate();
 	}
 
 	public void autonomous() {
@@ -37,6 +38,7 @@ public class Robot extends SampleRobot {
 
 	public void operatorControl() {
 		myRobot.setSafetyEnabled(true);
+		AnalogInput.setGlobalSampleRate(0.5);
 		int thanksArjun = 0;
 //		gyro.reset();
 //		gyro.calibrate();
@@ -67,7 +69,12 @@ public class Robot extends SampleRobot {
 				intake.setSpeed(0.0);
 
 			//System.out.println("Thanks for nothing, Dan: " + gyro.getAngle());
-
+			
+			if (thanksArjun%50 == 0){
+				System.out.println("Thanks for nothing arjuns: " + ai.getVoltage());
+				//System.out.println("Thanks for nothing dan: " + ai.getVoltage());
+			}
+			thanksArjun++;
 			myRobot.setExpiration(.1);
 		}
 
