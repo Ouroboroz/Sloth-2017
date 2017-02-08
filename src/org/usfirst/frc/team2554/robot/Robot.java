@@ -1,25 +1,35 @@
 package org.usfirst.frc.team2554.robot;
 import java.lang.Math;
+import edu.wpi.first.wpilibj.DigitalInput;
+
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SampleRobot;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 public class Robot extends SampleRobot {
 	RobotDrive myRobot; //change this later
     Joystick controller;
     double averageXaxisMag, averageYaxisMag;
     final double DEADZONE = 0.15;
-
+	DigitalInput limitSwitch;
+	Victor shooterL, shooterR, hopper2;
+    
 	public Robot() {
 		myRobot.setExpiration(0.1);
 		myRobot = new RobotDrive(IO.driveTrain[0], IO.driveTrain[1], IO.driveTrain[2], IO.driveTrain[3]);
 		averageXaxisMag = 0;
 		averageYaxisMag = 0;
 		controller = new Joystick(IO.controllerPort);
+    	limitSwitch = new DigitalInput(1);
+    	shooterL = new Victor(IO.shooter1);
+    	shooterR = new Victor(IO.shooter2);
+    	hopper2 = new Victor(IO.hopper);
+
 	}
 
 	public void robotInit() {
-
+		
 	}
 
 	public void autonomous() {
@@ -58,6 +68,23 @@ public class Robot extends SampleRobot {
 			//hehe some fun! :D
 			if(controller.getRawButton(2)){
 				controller.setRumble(RumbleType.kRightRumble, 0.5);
+			}
+			//For later: Rght trg is Axis 3
+			//Victor
+			if(controller.getRawAxis(3) > 0.8)
+			{
+				shooterL.set(0.6);
+				shooterR.set(0.6);
+				//Timer.delay(0.5);
+				hopper2.set(0.6);
+			}
+			else
+			{
+				shooterL.set(0.0);
+				shooterR.set(0.0);
+				//hopper2.set(0.3);
+				if(limitSwitch.get())//Checks state of limit switch
+					hopper2.set(0.0);
 			}
 		}
 	}
