@@ -1,12 +1,9 @@
 package org.usfirst.frc.team2554.robot;
-
-//Daniel's Code
 import java.lang.Math;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SampleRobot;
-<<<<<<< HEAD
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.Joystick;
@@ -18,28 +15,12 @@ public class Robot extends SampleRobot {
 	DigitalInput limitSwitch;
 	Victor shooterL, shooterR, hopper2;
     
-=======
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.Victor;
-import edu.wpi.first.wpilibj.Joystick;
-//import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-
-public class Robot extends SampleRobot {
-	RobotDrive myRobot; // change this later
-	Joystick controller;
-	double averageXaxisMag, averageYaxisMag, averageZaxisMag;
-	final double DEADZONE = 0.15;
-	Victor intake;
-	//ADXRS450_Gyro gyro;
-	AnalogInput ai;
-
->>>>>>> origin/master
 	public Robot() {
+		myRobot.setExpiration(0.1);
 		myRobot = new RobotDrive(IO.driveTrain[0], IO.driveTrain[1], IO.driveTrain[2], IO.driveTrain[3]);
 		averageXaxisMag = 0;
 		averageYaxisMag = 0;
 		controller = new Joystick(IO.controllerPort);
-<<<<<<< HEAD
     	limitSwitch = new DigitalInput(1);
     	shooterL = new Victor(IO.shooter1);
     	shooterR = new Victor(IO.shooter2);
@@ -49,15 +30,6 @@ public class Robot extends SampleRobot {
 
 	public void robotInit() {
 		
-=======
-		intake = new Victor(IO.rollerPort);
-		//gyro = new ADXRS450_Gyro();
-		ai = new AnalogInput(0);
-	}
-
-	public void robotInit() {
-		//gyro.calibrate();
->>>>>>> origin/master
 	}
 
 	public void autonomous() {
@@ -66,43 +38,37 @@ public class Robot extends SampleRobot {
 
 	public void operatorControl() {
 		myRobot.setSafetyEnabled(true);
-		AnalogInput.setGlobalSampleRate(0.5);
-		int thanksArjun = 0;
-//		gyro.reset();
-//		gyro.calibrate();
 		while (isOperatorControl() && isEnabled()) {
-			if (checkSign(isAboveDeadZone(controller.getRawAxis(IO.stickLeftX))) == checkSign(
-					isAboveDeadZone(controller.getRawAxis(IO.stickRightX)))) {
-				averageXaxisMag = (isAboveDeadZone(controller.getRawAxis(IO.stickLeftX))
-						+ isAboveDeadZone((controller.getRawAxis(IO.stickRightX)))) / 2.0;
+			//if both sticks are going in different directions
+			if(checkSign(controller.getRawAxis(IO.stickLeftY)) == -checkSign(controller.getRawAxis(IO.stickRightY))){
+				if(controller.getRawAxis(IO.stickLeftY) > DEADZONE && controller.getRawAxis(IO.stickRightY) > DEADZONE){
+					averageYaxisMag = (controller.getRawAxis(IO.stickLeftY)-controller.getRawAxis(IO.stickRightY))/2.0;
+				}
+				else
+					averageYaxisMag = 0;
+				myRobot.mecanumDrive_Cartesian(0, 0, averageYaxisMag/5, 0);
 			}
-			if (checkSign(isAboveDeadZone(controller.getRawAxis(IO.stickLeftY))) == checkSign(
-					isAboveDeadZone(controller.getRawAxis(IO.stickRightY)))) {
-				averageYaxisMag = (isAboveDeadZone(controller.getRawAxis(IO.stickLeftY))
-						+ isAboveDeadZone((controller.getRawAxis(IO.stickRightY)))) / 2.0;
-				averageZaxisMag = 0;
-			} else if (checkSign(isAboveDeadZone(controller.getRawAxis(IO.stickLeftY))) == -checkSign(
-					isAboveDeadZone(controller.getRawAxis(IO.stickRightY)))) {
-				averageZaxisMag = (isAboveDeadZone(controller.getRawAxis(IO.stickLeftY))
-						- isAboveDeadZone((controller.getRawAxis(IO.stickRightY)))) / 2.0;
-			} else {
+			//if both are going in same directions
+			if(checkSign(controller.getRawAxis(IO.stickLeftX)) == checkSign(controller.getRawAxis(IO.stickRightX))){
+				if(controller.getRawAxis(IO.stickLeftY) > DEADZONE && controller.getRawAxis(IO.stickRightX) > DEADZONE)
+					averageXaxisMag = (controller.getRawAxis(IO.stickLeftX)+controller.getRawAxis(IO.stickRightX))/2.0;
+				else
+					averageXaxisMag = 0;
+				if(controller.getRawAxis(IO.stickLeftY) > DEADZONE && controller.getRawAxis(IO.stickRightX) > DEADZONE)
+					averageYaxisMag = (controller.getRawAxis(IO.stickLeftY)+controller.getRawAxis(IO.stickRightY))/2.0;
+				else
+					averageYaxisMag = 0;
+				myRobot.mecanumDrive_Cartesian(averageXaxisMag/5, averageYaxisMag/5, 0, 0);
+			}
+			//press the A button for emergency shutdown B)
+			if(controller.getRawButton(1)){
 				myRobot.mecanumDrive_Cartesian(0, 0, 0, 0);
+				myRobot.drive(0, 0);
 			}
-			myRobot.mecanumDrive_Cartesian(averageXaxisMag / 2.0, averageYaxisMag / 2.0, -(averageZaxisMag) / 2.0,
-					0);
-
-			if (controller.getRawButton(6)) // Right Bumper
-				intake.setSpeed(-1.0);
-			else
-				intake.setSpeed(0.0);
-
-			//System.out.println("Thanks for nothing, Dan: " + gyro.getAngle());
-			
-			if (thanksArjun%50 == 0){
-				System.out.println("Thanks for nothing arjuns: " + ai.getVoltage());
-				//System.out.println("Thanks for nothing dan: " + ai.getVoltage());
+			//hehe some fun! :D
+			if(controller.getRawButton(2)){
+				controller.setRumble(RumbleType.kRightRumble, 0.5);
 			}
-<<<<<<< HEAD
 			//For later: Rght trg is Axis 3
 			//Victor
 			if(controller.getRawAxis(3) > 0.8)
@@ -120,25 +86,15 @@ public class Robot extends SampleRobot {
 				if(limitSwitch.get())//Checks state of limit switch
 					hopper2.set(0.0);
 			}
-=======
-			thanksArjun++;
-			myRobot.setExpiration(.1);
->>>>>>> origin/master
 		}
-
 	}
 
 	public void test() {
 	}
-
-	public double isAboveDeadZone(double checkNum) {
-		return (Math.abs(checkNum) > DEADZONE) ? checkNum : 0;
-	}
-
-	public int checkSign(double checkNum) {
-		if (checkNum < 0)
+	public int checkSign(double checkNum){
+		if(checkNum < 0)
 			return -1;
-		if (checkNum > 0)
+		if(checkNum > 0)
 			return 1;
 		return 0;
 	}
