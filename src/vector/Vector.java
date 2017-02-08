@@ -1,4 +1,4 @@
-package org.usfirst.frc.team2554.robot;
+package vector;
 import java.lang.Math;
 public class Vector {
 	private double x, y, magnitude, direction;

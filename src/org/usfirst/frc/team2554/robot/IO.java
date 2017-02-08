@@ -5,7 +5,9 @@ public class IO {
 	final public static int controllerPort = 0;
 	final public static int	joystickPort = 1;
 	//Front Left, Back Left, Front Right, Back Right
+	//PWM PORTS
 	final static int driveTrain[] = {0,1,3,4};
+	final static int rollerPort = 5;
 	//Mapping of the Axis on the Joystick
 		/*
 		 1 is the L Y Axis

@@ -1,10 +1,10 @@
-package org.usfirst.frc.team2554.robot;
+package pixy;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 //Warning: if the pixy is plugged in through mini usb, this code WILL NOT WORK b/c the pixy is smart and detects where it should send data
 public class Pixy {
 SerialPort pixy;
-Port port = Port.kMXP;
+Port port = Port.kOnboard;
 PixyPacket[] packets;
 PixyException pExc;
 String print;
