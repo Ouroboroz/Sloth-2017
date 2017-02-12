@@ -12,7 +12,7 @@ public class Robot extends SampleRobot {
     Joystick controller;
     double averageXaxisMag, averageYaxisMag;
     final double DEADZONE = 0.15;
-	DigitalInput limitSwitch;
+//	DigitalInput limitSwitch;
 //	Victor shooterL, shooterR, hopper2; MORGAN'S CODE
     
 	public Robot() {
@@ -21,7 +21,7 @@ public class Robot extends SampleRobot {
 		averageXaxisMag = 0;
 		averageYaxisMag = 0;
 		controller = new Joystick(IO.controllerPort);
-    	limitSwitch = new DigitalInput(1);
+//    	limitSwitch = new DigitalInput(1);
 //    	shooterL = new Victor(IO.shooter1);
 //    	shooterR = new Victor(IO.shooter2);
 //    	hopper2 = new Victor(IO.hopper); MORGAN'S CODE
