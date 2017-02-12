@@ -13,7 +13,7 @@ public class Robot extends SampleRobot {
     double averageXaxisMag, averageYaxisMag;
     final double DEADZONE = 0.15;
 	DigitalInput limitSwitch;
-	Victor shooterL, shooterR, hopper2;
+//	Victor shooterL, shooterR, hopper2; MORGAN'S CODE
     
 	public Robot() {
 		myRobot.setExpiration(0.1);
@@ -22,9 +22,9 @@ public class Robot extends SampleRobot {
 		averageYaxisMag = 0;
 		controller = new Joystick(IO.controllerPort);
     	limitSwitch = new DigitalInput(1);
-    	shooterL = new Victor(IO.shooter1);
-    	shooterR = new Victor(IO.shooter2);
-    	hopper2 = new Victor(IO.hopper);
+//    	shooterL = new Victor(IO.shooter1);
+//    	shooterR = new Victor(IO.shooter2);
+//    	hopper2 = new Victor(IO.hopper); MORGAN'S CODE
 
 	}
 
@@ -71,7 +71,7 @@ public class Robot extends SampleRobot {
 			}
 			//For later: Rght trg is Axis 3
 			//Victor
-			if(controller.getRawAxis(3) > 0.8)
+			/*if(controller.getRawAxis(3) > 0.8)
 			{
 				shooterL.set(0.6);
 				shooterR.set(0.6);
@@ -85,7 +85,7 @@ public class Robot extends SampleRobot {
 				//hopper2.set(0.3);
 				if(limitSwitch.get())//Checks state of limit switch
 					hopper2.set(0.0);
-			}
+			} MORGAN'S CODE */
 		}
 	}
 
